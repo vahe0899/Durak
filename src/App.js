@@ -1,8 +1,8 @@
-import Component from './Components/Component/Component';
+import Table from "./Components/Table/Table";
 
 function App() {
   return (
-    <Component />
+    <Table />
   );
 }
 
