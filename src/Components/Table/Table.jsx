@@ -1,7 +1,8 @@
 import './_Table.css'
 import { useDispatch, useSelector } from 'react-redux';
-import { beat, start, aiTurn } from '../../Redux/actions';
+import { beat, start, aiTurn, take } from '../../Redux/actions';
 import Card from '../Card/Card';
+import { useEffect } from 'react';
 
 function Table() {
 
@@ -51,10 +52,20 @@ function Table() {
         dispatch(aiTurn());
     };  
 
+    const takeHandler = () => {
+        dispatch(take());
+    };  
+
+    useEffect(() => {
+        console.log(isAiTurn);
+    }, [isAiTurn])
+
     return(
     <div className="container">
         <div className="deck">
-            {trump && <Card data={trump}/>}
+            {deck.length !== 0 && trump && <Card data={trump}/>}
+            {deck.length > 1 && trump && <Card data={back}/>}
+            {deck.length}
         </div>
         <div className="table">
             <button onClick={startGameHandler}>Начать игру</button>
@@ -82,6 +93,7 @@ function Table() {
             </div>
         </div>
         <button className="beat" onClick={beatHandler}>Бито</button>
+        <button className="beat" onClick={takeHandler}>Взять</button>
     </div>
     )
 }
