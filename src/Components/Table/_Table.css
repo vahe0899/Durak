@@ -24,6 +24,8 @@ html, body {
     flex-direction: column;
     justify-content: flex-start;
     height: 100%;
+    max-width: 1000px;
+    overflow-x: auto;
 }
 
 .ai-hand {
