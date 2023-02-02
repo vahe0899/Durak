@@ -12,7 +12,7 @@ function Card(props) {
 
     return(
         <img 
-            className="card" 
+            className={props.class} 
             src={props.data.face || props.data} 
             alt='' 
             onClick={props.user ? userTurnHandler : undefined}>

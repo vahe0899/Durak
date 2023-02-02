@@ -1,19 +1,21 @@
 import cards from "../cards";
 import {BEAT, START, USER_TURN, AI_TURN, TAKE} from "./types";
 import back from '../Components/assets/cardBackRed.png';
-import { aiTurn } from "./actions";
 
 const initialState = {
     userHand: [],
     aiHand: [],
     playgroundFirstLine: [],
     playgroundSecondLine: [],
-    deck: cards,
+    deck: [...cards],
     beat: [],
     back: back,
     aiTurn: false,
+    modalWindow: true,
     trumpCard: '',
-    trumpSuit: ''
+    trumpSuit: '',
+    modalText: 'Нажмите на кнопку, чтоб начать игру. Надеюсь, что правила вы помните. Удачи!',
+    isUserWin: false
 };
 
 //тасовка
@@ -50,12 +52,10 @@ function turnCheck(userHand, aiHand, suit) {
     let aiTrumps = aiHand.filter(item => item.suit === suit).map(item => item.value);
 
     let userTrumps = userHand.filter(item => item.suit === suit).map(item => item.value);
-    console.log(aiTrumps, userTrumps)
     //берём наименьшие карты у обоих игроков и сравниваем их
     let aiMinimalTrump = Math.min(...aiTrumps)
     let userMinimalTrump = Math.min(...userTrumps)
     let turn
-    console.log(aiMinimalTrump, userMinimalTrump)
     return (aiMinimalTrump > userMinimalTrump) ? turn = false : turn = true
 }
 
@@ -64,7 +64,7 @@ function aiAttack(line1, line2, hand, deck, hand2) {
     let index;
     let selectedCard;
     if(line1.length === 0) {
-        index = Math.round(Math.random()*hand.length);
+        index = Math.floor(Math.random()*hand.length);
         selectedCard = hand.splice(index, 1);
         line1.push(selectedCard[0]);
     } else {
@@ -152,8 +152,6 @@ function userDefense(line1, line2, hand, action, trump) {
 }
 
 export const reducer = (state = initialState, action) => {
-    // console.log('STATE>>>>>', state)
-    // console.log('ACTION>>>>>', action)
     switch (action.type) {
         case BEAT:
             if (state.playgroundFirstLine.length === 0) {
@@ -214,17 +212,40 @@ export const reducer = (state = initialState, action) => {
                 aiHand: distributionResult.newAiArray,
                 trumpCard: shuffleResult.trump,
                 trumpSuit: shuffleResult.suit,
-                aiTurn: turnCheckResult
+                aiTurn: turnCheckResult,
+                modalWindow: false,
+                isUserWin: false
             }
 
         case USER_TURN:
         // Проверка выиграл ли кто-нибудь    
             if(state.deck.length === 0 && state.aiHand.length === 0) {
-                alert('Конец игры ежже. Вы проиграли :(')
-                return {...state}
+                return {
+                    ...state,
+                    deck: [...cards],
+                    userHand: [],
+                    aiHand: [],
+                    playgroundFirstLine: [],
+                    playgroundSecondLine: [],
+                    trumpCard: '',
+                    trumpSuit: '',
+                    modalWindow: true,
+                    modalText: 'Конец игры. Вы проиграли :('
+                }
             } else if(state.deck.length === 0 && state.userHand.length === 0) {
-                alert('Конец игры ежже. Вы выиграли :)')
-                return {...state}
+                return {
+                    ...state,
+                    deck: [...cards],
+                    userHand: [],
+                    aiHand: [],
+                    playgroundFirstLine: [],
+                    playgroundSecondLine: [],
+                    trumpCard: '',
+                    trumpSuit: '',
+                    modalWindow: true,
+                    modalText: 'Конец игры. Вы выиграли :)',
+                    isUserWin: true
+                }
             } else {
                 let userResult
             // проверка на наличие карт на столе и выбор: атаковать или отбиваться
@@ -250,16 +271,33 @@ export const reducer = (state = initialState, action) => {
         case AI_TURN:
         // Проверка выиграл ли кто-нибудь    
             if(state.deck.length === 0 && state.aiHand.length === 0) {
-                alert('Конец игры ежже. Вы проиграли :(')
                 return {
                     ...state,
-                    aiTurn: false
+                    aiTurn: false,
+                    deck: [...cards],
+                    userHand: [],
+                    aiHand: [],
+                    playgroundFirstLine: [],
+                    playgroundSecondLine: [],
+                    trumpCard: '',
+                    trumpSuit: '',
+                    modalWindow: true,
+                    modalText: 'Конец игры. Вы проиграли :('
                 }
             } else if(state.deck.length === 0 && state.userHand.length === 0) {
-                alert('Конец игры ежже. Вы выиграли :)')
                 return {
                     ...state,
-                    aiTurn: false
+                    aiTurn: false,
+                    deck: [...cards],
+                    userHand: [],
+                    aiHand: [],
+                    playgroundFirstLine: [],
+                    playgroundSecondLine: [],
+                    trumpCard: '',
+                    trumpSuit: '',
+                    modalWindow: true,
+                    modalText: 'Конец игры. Вы выиграли :)',
+                    isUserWin: true
                 }
             } else {
                 let aiResult

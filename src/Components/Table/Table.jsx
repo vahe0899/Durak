@@ -1,11 +1,12 @@
 import './_Table.css'
 import { useDispatch, useSelector } from 'react-redux';
-import { beat, start, aiTurn, take } from '../../Redux/actions';
+import { beat, aiTurn, take } from '../../Redux/actions';
 import Card from '../Card/Card';
 import { useEffect } from 'react';
+import { ModalWindow } from '../ModalWindow/ModalWindow';
+import Confetti from 'react-confetti'
 
 function Table() {
-
     const dispatch = useDispatch();
 
     const back = useSelector(state => {
@@ -40,13 +41,17 @@ function Table() {
         return state.aiTurn
     });
 
+    const modalWindow = useSelector(state => {
+        return state.modalWindow
+    });
+
+    const userWin = useSelector(state => {
+        return state.isUserWin
+    });
+
     const beatHandler = () => {
         dispatch(beat());
     }; 
-
-    const startGameHandler = () => {
-        dispatch(start());
-    };  
 
     const aiTurnHandler = () => {
         dispatch(aiTurn());
@@ -57,43 +62,49 @@ function Table() {
     };  
 
     useEffect(() => {
-        console.log(isAiTurn);
-    }, [isAiTurn])
+        if(isAiTurn) {
+            return aiTurnHandler()
+        }
+    })
 
     return(
     <div className="container">
+        {userWin && <Confetti/>}
+        {modalWindow && <ModalWindow />}
         <div className="deck">
-            {deck.length !== 0 && trump && <Card data={trump}/>}
-            {deck.length > 1 && trump && <Card data={back}/>}
-            {deck.length}
+            <div className="cards">
+                {deck.length !== 0 && trump && <Card data={trump} class={'card'}/>}
+                {deck.length > 1 && trump && <Card data={back} class={'horizontal-card'}/>}
+            </div>
         </div>
         <div className="table">
-            <button onClick={startGameHandler}>Начать игру</button>
             <div className="ai-area">
-                <div className="ai-hand" onClick={isAiTurn ? aiTurnHandler() : undefined}>
+                <div className="ai-hand">
                     {aiHand.map((item) => 
-                    <Card data={item} key={item.id}/>)}
+                    <Card data={back} key={item.id} class={'card'}/>)}
                 </div>
             </div>
             <div className="playground">
                 <div className="first-line">
                     {firstLine.map((item) => 
-                <Card data={item} key={item.id}/>)}
+                <Card data={item} key={item.id} class={'card'}/>)}
                 </div>
                 <div className="second-line">
                     {secondLine.map((item) => 
-                <Card data={item} key={item.id}/>)}
+                <Card data={item} key={item.id} class={'card'}/>)}
                 </div>
             </div>
             <div className="user-area">
                 <div className="user-hand">
                     {userHand.map((item) => 
-                    <Card data={item} key={item.id} user={true}/>)}
+                    <Card data={item} key={item.id} user={true} class={'card'}/>)}
                 </div>
             </div>
         </div>
-        <button className="beat" onClick={beatHandler}>Бито</button>
-        <button className="beat" onClick={takeHandler}>Взять</button>
+        <div className="buttons">
+            {trump && <button className="btn" onClick={beatHandler}>Бито</button>}
+            {trump && <button className="btn" onClick={takeHandler}>Взять</button>}
+        </div>
     </div>
     )
 }
